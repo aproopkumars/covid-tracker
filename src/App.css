@@ -6,7 +6,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 20cm;
+  height: auto;
 }
 
 .container {
@@ -16,13 +16,8 @@ body {
   flex-direction: column;
 }
 
-.image {
-  width: 370px;
-  margin-top: 50px;
-}
-
-@media (max-width: 770px) {
-  .image {
-    width: 100%;
-  }
+.loginForm {
+  align-items: center;
+  justify-content: center;
+  margin-top: 200px;
 }

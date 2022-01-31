@@ -1,80 +1,73 @@
 import axios from "axios";
 import moment from "moment";
 
-//const url = "https://covid19.mathdro.id/api";
-
 const url = "https://api.covidtracking.com";
 
 export const fetchData = async ({ state, date }) => {
   let changeableUrl = url;
-  console.log({ date });
+  const defaultRequestBody = {
+    status: "",
+    hospitalized: 0,
+    recovered: 0,
+    deaths: 0,
+    lastUpdate: 0,
+  };
+
+  if (!moment(date).isBetween("2020-01-13", "2021-03-07")) {
+    console.log({ date });
+    return {
+      ...defaultRequestBody,
+      status: {
+        error: true,
+        body: "Date selected should be in range between 2021-03-07 - 2020-01-13",
+      },
+    };
+  }
+
   if (state && date) {
     const stateLower = state.toLowerCase();
     const dateFormat = moment(date).format("YYYYMMDD");
     console.log("dateFormat", dateFormat);
     changeableUrl = `${url}/v1/states/${stateLower}/${dateFormat}.json`;
+    console.log({ date });
   }
 
   try {
     const {
-      data: { hospitalizedCurrently, recovered, death, lastUpdateEt },
+      data: { hospitalizedCurrently, recovered, death, lastUpdateEt, error },
     } = await axios.get(changeableUrl);
-    // const {
-    //   data: { deathConfirmed, recovered, deaths, lastUpdateEt },
-    // } = await axios.get(changeableUrl);
 
-    console.log(
-      "hospitalizedCurrently, recovered, deaths, lastUpdateEt",
-      hospitalizedCurrently,
-      recovered,
-      death,
-      lastUpdateEt
-    );
+    if (error) {
+      return {
+        ...defaultRequestBody,
+        status: { error: true, body: "No records available" },
+      };
+    }
 
     return {
-      confirmed: hospitalizedCurrently,
-      recovered,
-      deaths: death,
-      lastUpdate: lastUpdateEt,
+      hospitalized: hospitalizedCurrently || 0,
+      recovered: recovered || 0,
+      deaths: death || 0,
+      lastUpdate: lastUpdateEt || 0,
     };
   } catch (error) {
     console.log(error);
+    return defaultRequestBody;
   }
 };
 
 export const fetchDailyData = async () => {
   try {
-    // const { data } = await axios.get(`${url}/daily`);
-    // const modifiedData = data.map((dailyData) => ({
-    //   confirmed: dailyData.confirmed.total,
-    //   deaths: dailyData.deaths.total,
-    //   date: dailyData.reportDate,
-    // }));
-    // console.log({ data });
-
     const test = `${url}/v1/us/daily.json`;
     const { data } = await axios.get(test);
+
     const modifiedData = data.map((dailyData) => ({
       date: dailyData.date,
       deaths: dailyData.death,
-      confirmed: dailyData.hospitalizedCurrently,
+      hospitalized: dailyData.hospitalizedCurrently,
     }));
-    console.log({ data });
-    console.log({ modifiedData });
 
     return modifiedData;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const fetchCountries = async () => {
-  try {
-    const {
-      data: { countries },
-    } = await axios.get(`${url}/countries`);
-
-    return countries.map((country) => country.name);
   } catch (error) {
     console.log(error);
   }

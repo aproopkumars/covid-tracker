@@ -4,9 +4,11 @@ import { Card, CardContent, Typography, Grid } from "@material-ui/core";
 import CountUp from "react-countup";
 import cx from "classnames";
 
-const Cards = ({ data: { confirmed, recovered, deaths, lastUpdate } }) => {
-  if (!confirmed) {
-    return "Loading...";
+const Cards = ({
+  data: { hospitalized, recovered, deaths, lastUpdate, status },
+}) => {
+  if (status?.error) {
+    return status.body;
   }
 
   return (
@@ -17,20 +19,25 @@ const Cards = ({ data: { confirmed, recovered, deaths, lastUpdate } }) => {
           component={Card}
           xs={12}
           md={3}
-          className={cx("card", "infected")}
+          className={cx("card", "hospitalized")}
         >
           <CardContent>
             <Typography color="textSecondary" gutterBottom>
-              Infected
+              Hospitalized
             </Typography>
             <Typography variant="h5">
-              <CountUp start={0} end={confirmed} duartion={2.5} separator="," />
+              <CountUp
+                start={0}
+                end={hospitalized}
+                duartion={2.5}
+                separator=","
+              />
             </Typography>
             <Typography color="textSecondary">
               {new Date(lastUpdate).toDateString()}
             </Typography>
             <Typography variant="body2">
-              Number of active cases of COVID-19
+              Number of people hospitalized
             </Typography>
           </CardContent>
         </Grid>
@@ -53,7 +60,7 @@ const Cards = ({ data: { confirmed, recovered, deaths, lastUpdate } }) => {
               {new Date(lastUpdate).toDateString()}
             </Typography>
             <Typography variant="body2">
-              Number of recoveries from COVID-19
+              Number of recoveries from COVID
             </Typography>
           </CardContent>
         </Grid>
@@ -75,9 +82,7 @@ const Cards = ({ data: { confirmed, recovered, deaths, lastUpdate } }) => {
             <Typography color="textSecondary">
               {new Date(lastUpdate).toDateString()}
             </Typography>
-            <Typography variant="body2">
-              Number of deaths caused by COVID-19
-            </Typography>
+            <Typography variant="body2">Number of deaths reported</Typography>
           </CardContent>
         </Grid>
       </Grid>

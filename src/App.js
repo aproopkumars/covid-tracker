@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchData } from "./api";
 import "./App.css";
-import { Cards, Chart, CountryPicker, LoginForm } from "./components";
+import { Cards, Chart, PickerTemplate, LoginForm } from "./components";
 
 function App() {
   const adminUser = {
@@ -27,8 +27,8 @@ function App() {
         email: details.email,
       });
     } else {
-      console.log("details do not match");
-      setError("details do not match");
+      console.log("Credentials do not match");
+      setError("Credentials do not match");
     }
   };
 
@@ -68,8 +68,9 @@ function App() {
     <div className="App">
       {user.email !== "" ? (
         <div className="container">
+          {console.log({ data })}
           <Cards data={data} />
-          <CountryPicker
+          <PickerTemplate
             handleCountryChange={handleCountryChange}
             handleDateChange={handleDateChange}
           />
